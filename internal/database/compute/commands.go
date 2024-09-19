@@ -24,7 +24,7 @@ var argumentsNumber = map[int]int{
 	DelCommandID: 1,
 }
 
-func commandToId(command string) (int, bool) {
+func commandToID(command string) (int, bool) {
 	commandId, ok := commandNames[command]
 	return commandId, ok
 }
