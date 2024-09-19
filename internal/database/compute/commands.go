@@ -6,7 +6,7 @@ const (
 	DelCommandID = 3
 )
 
-var commandIds = map[int]string{
+var commandIDs = map[int]string{
 	GetCommandID: "GET",
 	SetCommandID: "SET",
 	DelCommandID: "DEL",
@@ -25,16 +25,16 @@ var argumentsNumber = map[int]int{
 }
 
 func commandToID(command string) (int, bool) {
-	commandId, ok := commandNames[command]
-	return commandId, ok
+	commandID, ok := commandNames[command]
+	return commandID, ok
 }
 
 func idToCommand(commandId int) (string, bool) {
-	commandName, ok := commandIds[commandId]
+	commandName, ok := commandIDs[commandId]
 	return commandName, ok
 }
 
-func getArgumentsNumber(commandId int) (int, bool) {
-	number, ok := argumentsNumber[commandId]
+func getArgumentsNumber(commandID int) (int, bool) {
+	number, ok := argumentsNumber[commandID]
 	return number, ok
 }

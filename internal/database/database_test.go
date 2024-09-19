@@ -83,7 +83,7 @@ func TestDatabase_HandleQuery(t *testing.T) {
 		"successful get query": {
 			compute: &mockCompute{
 				queryResult: compute.Query{
-					CommandId: compute.GetCommandId,
+					CommandID: compute.GetCommandID,
 					Arguments: []string{"1"},
 				},
 			},
@@ -94,7 +94,7 @@ func TestDatabase_HandleQuery(t *testing.T) {
 		"successful set query": {
 			compute: &mockCompute{
 				queryResult: compute.Query{
-					CommandId: compute.SetCommandId,
+					CommandID: compute.SetCommandID,
 					Arguments: []string{"1", "1"},
 				},
 			},
@@ -105,7 +105,7 @@ func TestDatabase_HandleQuery(t *testing.T) {
 		"successful delete query": {
 			compute: &mockCompute{
 				queryResult: compute.Query{
-					CommandId: compute.DelCommandId,
+					CommandID: compute.DelCommandID,
 					Arguments: []string{"1"},
 				},
 			},
@@ -123,7 +123,7 @@ func TestDatabase_HandleQuery(t *testing.T) {
 		},
 		"invalid command ID": {
 			compute: &mockCompute{
-				queryResult: compute.Query{CommandId: 999},
+				queryResult: compute.Query{CommandID: 999},
 			},
 			queryStr:  "unknown command",
 			expected:  "",

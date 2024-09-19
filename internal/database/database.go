@@ -57,9 +57,9 @@ func (d *Database) HandleQuery(queryStr string) (string, error) {
 		return "", err
 	}
 
-	commandId := query.GetCommandId()
+	commandID := query.GetCommandID()
 
-	switch commandId {
+	switch commandID {
 	case compute.GetCommandID:
 		return d.handleGetQuery(query)
 	case compute.SetCommandID:
@@ -67,8 +67,8 @@ func (d *Database) HandleQuery(queryStr string) (string, error) {
 	case compute.DelCommandID:
 		return d.handleDelQuery(query)
 	default:
-		d.logger.Error("Invalid command ID", zap.Int("commandId", commandId), zap.Error(err))
-		return "", fmt.Errorf("non-existent command ID: %d", commandId)
+		d.logger.Error("Invalid command ID", zap.Int("commandID", commandID), zap.Error(err))
+		return "", fmt.Errorf("non-existent command ID: %d", commandID)
 	}
 }
 

@@ -44,7 +44,7 @@ func TestCompute_Parse(t *testing.T) {
 	}{
 		"parse valid query": {
 			query:         "set a a",
-			expectedQuery: Query{CommandId: SetCommandId, Arguments: []string{"a", "a"}},
+			expectedQuery: Query{CommandID: SetCommandID, Arguments: []string{"a", "a"}},
 			error:         nil,
 		},
 		"parse empty query": {

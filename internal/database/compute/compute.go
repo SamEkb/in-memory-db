@@ -30,19 +30,19 @@ func (c *Compute) Parse(queryInput string) (Query, error) {
 	}
 
 	command := strings.ToUpper(args[0])
-	commandId, ok := commandToId(command)
+	commandID, ok := commandToID(command)
 	if !ok {
 		c.logger.Error("invalid command id")
 		return Query{}, errors.New("invalid command id")
 	}
 
-	number, ok := getArgumentsNumber(commandId)
+	number, ok := getArgumentsNumber(commandID)
 	if !ok {
 		c.logger.Error("invalid arguments")
 		return Query{}, errors.New("invalid arguments")
 	}
 
-	query := NewQuery(commandId, args[1:])
+	query := NewQuery(commandID, args[1:])
 
 	if number != len(query.GetArguments()) {
 		c.logger.Error("invalid arguments number")

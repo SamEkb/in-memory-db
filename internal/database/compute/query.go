@@ -1,19 +1,19 @@
 package compute
 
 type Query struct {
-	CommandId int
+	CommandID int
 	Arguments []string
 }
 
-func NewQuery(commandId int, arguments []string) Query {
+func NewQuery(commandID int, arguments []string) Query {
 	return Query{
-		CommandId: commandId,
+		CommandID: commandID,
 		Arguments: arguments,
 	}
 }
 
-func (query *Query) GetCommandId() int {
-	return query.CommandId
+func (query *Query) GetCommandID() int {
+	return query.CommandID
 }
 
 func (query *Query) GetArguments() []string {
