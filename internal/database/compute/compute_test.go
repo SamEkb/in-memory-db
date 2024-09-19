@@ -6,18 +6,11 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zaptest"
 )
 
-func initializeLogger(t *testing.T) *zap.Logger {
-	logger, err := zap.NewProduction()
-	if err != nil {
-		t.Fatalf("Unable to create logger: %v", err)
-	}
-	return logger
-}
-
 func TestNewCompute(t *testing.T) {
-	logger := initializeLogger(t)
+	logger := zaptest.NewLogger(t)
 	defer func(logger *zap.Logger) {
 		err := logger.Sync()
 		if err != nil {
@@ -32,7 +25,7 @@ func TestNewCompute(t *testing.T) {
 }
 
 func TestCompute_Parse(t *testing.T) {
-	logger := initializeLogger(t)
+	logger := zaptest.NewLogger(t)
 	defer func(logger *zap.Logger) {
 		err := logger.Sync()
 		if err != nil {

@@ -6,17 +6,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zaptest"
 	"in-memory-db/internal/database/compute"
 )
 
 func TestNewDatabase(t *testing.T) {
-	logger, _ := zap.NewProduction()
-	defer func(logger *zap.Logger) {
-		err := logger.Sync()
-		if err != nil {
-			logger.Error("Unable to sync logger", zap.Error(err))
-		}
-	}(logger)
+	logger := zaptest.NewLogger(t)
 
 	storage := &mockStorage{data: make(map[string]string)}
 	c := &mockCompute{}
