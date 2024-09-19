@@ -29,8 +29,8 @@ func commandToID(command string) (int, bool) {
 	return commandID, ok
 }
 
-func idToCommand(commandId int) (string, bool) {
-	commandName, ok := commandIDs[commandId]
+func IDToCommand(commandID int) (string, bool) {
+	commandName, ok := commandIDs[commandID]
 	return commandName, ok
 }
 
