@@ -11,7 +11,7 @@ type mockCompute struct {
 	parseErr    error
 }
 
-func (m *mockCompute) Parse(query string) (compute.Query, error) {
+func (m *mockCompute) Parse(_ string) (compute.Query, error) {
 	return m.queryResult, m.parseErr
 }
 

@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"testing"
 
+	"in-memory-db/internal/database/storage/engine"
+
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
-	"in-memory-db/internal/database/storage/engine"
 )
 
 func initializeLogger(t *testing.T) *zap.Logger {

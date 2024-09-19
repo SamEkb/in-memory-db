@@ -4,10 +4,11 @@ import (
 	"errors"
 	"testing"
 
+	"in-memory-db/internal/database/compute"
+
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest"
-	"in-memory-db/internal/database/compute"
 )
 
 func TestNewDatabase(t *testing.T) {

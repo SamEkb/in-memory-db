@@ -1,27 +1,27 @@
 package compute
 
 const (
-	GetCommandId = 1
-	SetCommandId = 2
-	DelCommandId = 3
+	GetCommandID = 1
+	SetCommandID = 2
+	DelCommandID = 3
 )
 
 var commandIds = map[int]string{
-	GetCommandId: "GET",
-	SetCommandId: "SET",
-	DelCommandId: "DEL",
+	GetCommandID: "GET",
+	SetCommandID: "SET",
+	DelCommandID: "DEL",
 }
 
 var commandNames = map[string]int{
-	"GET": GetCommandId,
-	"SET": SetCommandId,
-	"DEL": DelCommandId,
+	"GET": GetCommandID,
+	"SET": SetCommandID,
+	"DEL": DelCommandID,
 }
 
 var argumentsNumber = map[int]int{
-	GetCommandId: 1,
-	SetCommandId: 2,
-	DelCommandId: 1,
+	GetCommandID: 1,
+	SetCommandID: 2,
+	DelCommandID: 1,
 }
 
 func commandToId(command string) (int, bool) {
