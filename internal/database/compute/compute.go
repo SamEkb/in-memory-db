@@ -2,6 +2,7 @@ package compute
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 
 	"go.uber.org/zap"
@@ -42,11 +43,17 @@ func (c *Compute) Parse(queryInput string) (Query, error) {
 		return Query{}, errors.New("invalid arguments")
 	}
 
+	if len(args[1:]) == 0 {
+		c.logger.Error("invalid arguments number")
+		return Query{}, fmt.Errorf("invalid number of arguments for command %s, expected %d but got %d", command, number, len(args[1:]))
+
+	}
+
 	query := NewQuery(commandID, args[1:])
 
 	if number != len(query.GetArguments()) {
-		c.logger.Error("invalid arguments number")
-		return Query{}, errors.New("invalid arguments number")
+		c.logger.Error("invalid arguments length for command")
+		return Query{}, errors.New("invalid arguments length for command")
 	}
 
 	return query, nil

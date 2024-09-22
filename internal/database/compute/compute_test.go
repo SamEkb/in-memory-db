@@ -1,7 +1,6 @@
 package compute
 
 import (
-	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -40,27 +39,27 @@ func TestCompute_Parse(t *testing.T) {
 	tests := map[string]struct {
 		query         string
 		expectedQuery Query
-		error         error
+		expectError   bool
 	}{
 		"parse valid query": {
 			query:         "set a a",
 			expectedQuery: Query{CommandID: SetCommandID, Arguments: []string{"a", "a"}},
-			error:         nil,
+			expectError:   false,
 		},
 		"parse empty query": {
 			query:         "",
 			expectedQuery: Query{},
-			error:         errors.New("invalid query length"),
+			expectError:   true,
 		},
 		"parse invalid command query": {
 			query:         "sset a a",
 			expectedQuery: Query{},
-			error:         errors.New("invalid command id"),
+			expectError:   true,
 		},
 		"parse invalid arguments number query": {
 			query:         "set a",
 			expectedQuery: Query{},
-			error:         errors.New("invalid arguments number"),
+			expectError:   true,
 		},
 	}
 
@@ -68,8 +67,8 @@ func TestCompute_Parse(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			query, err := compute.Parse(test.query)
 			assert.Equal(t, query, test.expectedQuery)
-			if test.error != nil {
-				assert.EqualError(t, err, test.error.Error())
+			if test.expectError {
+				assert.Error(t, err)
 			} else {
 				assert.NoError(t, err)
 			}

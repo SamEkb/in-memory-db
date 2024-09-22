@@ -105,7 +105,7 @@ func TestEngine_Put(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			engine.Put(test.key, test.value)
+			engine.Set(test.key, test.value)
 			value, err := engine.Get(test.key)
 			assert.Equal(t, value, test.value)
 			assert.Nil(t, err, "Error should be nil")

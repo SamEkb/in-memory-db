@@ -70,17 +70,12 @@ func (d *Database) HandleQuery(queryStr string) (string, error) {
 }
 
 func (d *Database) handleGetQuery(query compute.Query) (string, error) {
-	args := query.GetArguments()
-	if len(args) == 0 {
-		d.logger.Error("No arguments provided for GET query")
-		return "", errors.New("no arguments provided")
-	}
+	key := query.GetArguments()[0]
 
-	key := args[0]
 	result, err := d.storage.Get(key)
 	if err != nil {
 		d.logger.Error("Get operation failed", zap.String("key", key), zap.Error(err))
-		return "", fmt.Errorf("get failed for key %s: %w", args[0], err)
+		return "", fmt.Errorf("get failed for key %s: %w", key, err)
 	}
 
 	return result, nil
@@ -88,10 +83,6 @@ func (d *Database) handleGetQuery(query compute.Query) (string, error) {
 
 func (d *Database) handleSetQuery(query compute.Query) (string, error) {
 	args := query.GetArguments()
-	if len(args) == 0 {
-		d.logger.Error("No arguments provided for SET query")
-		return "", errors.New("no arguments provided")
-	}
 
 	d.storage.Set(args[0], args[1])
 
@@ -99,13 +90,9 @@ func (d *Database) handleSetQuery(query compute.Query) (string, error) {
 }
 
 func (d *Database) handleDelQuery(query compute.Query) (string, error) {
-	args := query.GetArguments()
-	if len(args) == 0 {
-		d.logger.Error("No arguments provided for DEL query")
-		return "", errors.New("no arguments provided")
-	}
+	key := query.GetArguments()[0]
 
-	d.storage.Del(args[0])
+	d.storage.Del(key)
 
 	return OkResponse, nil
 }

@@ -20,14 +20,13 @@ func NewEngine(logger *zap.Logger) *Engine {
 	}
 }
 
-func (e *Engine) Put(key string, value string) {
+func (e *Engine) Set(key string, value string) {
 	e.hashtable.Insert(key, value)
 }
 
 func (e *Engine) Get(key string) (string, error) {
 	result, ok := e.hashtable.Get(key)
 	if !ok {
-		e.logger.Error("Get operation failed: record doesn't exist", zap.String("key", key))
 		return "", fmt.Errorf("record with key: %s doesn't exist", key)
 	}
 	return result, nil

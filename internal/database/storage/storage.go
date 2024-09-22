@@ -1,13 +1,11 @@
 package storage
 
 import (
-	"fmt"
-
 	"go.uber.org/zap"
 )
 
 type Engine interface {
-	Put(string, string)
+	Set(string, string)
 	Get(string) (string, error)
 	Del(string)
 }
@@ -22,16 +20,14 @@ func NewStorage(engine Engine, logger *zap.Logger) *Storage {
 }
 
 func (s *Storage) Set(key string, value string) {
-	s.engine.Put(key, value)
+	s.engine.Set(key, value)
 }
 
 func (s *Storage) Get(key string) (string, error) {
 	result, err := s.engine.Get(key)
 	if err != nil {
-		s.logger.Error("Get operation failed: record doesn't exist", zap.String("key", key), zap.Error(err))
-		return "", fmt.Errorf("record with key: %s doesnt exist", key)
+		return "", err
 	}
-
 	return result, nil
 }
 

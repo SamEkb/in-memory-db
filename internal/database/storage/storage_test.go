@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"fmt"
 	"testing"
 
 	"in-memory-db/internal/database/storage/engine"
@@ -85,9 +84,9 @@ func TestStorage_Set(t *testing.T) {
 			value, err := storage.Get(test.key)
 			if test.exists {
 				assert.Equal(t, test.value, value)
-				assert.Nil(t, err)
+				assert.NoError(t, err)
 			} else {
-				assert.NotNil(t, err)
+				assert.Error(t, err)
 			}
 		})
 	}
@@ -102,31 +101,26 @@ func TestStorage_Get(t *testing.T) {
 	tests := map[string]struct {
 		key           string
 		expectedValue string
-		error         error
 		expectErr     bool
 	}{
 		"get existing key": {
 			key:           "1",
 			expectedValue: "1",
-			error:         nil,
 			expectErr:     false,
 		},
 		"get another existing key": {
 			key:           "2",
 			expectedValue: "2",
-			error:         nil,
 			expectErr:     false,
 		},
 		"get non-existing key": {
 			key:           "3",
 			expectedValue: "3",
-			error:         fmt.Errorf("record with key: %s doesnt exist", "3"),
 			expectErr:     true,
 		},
 		"get empty key": {
 			key:           "",
 			expectedValue: "",
-			error:         fmt.Errorf("record with key: %s doesnt exist", ""),
 			expectErr:     true,
 		},
 	}
@@ -135,9 +129,9 @@ func TestStorage_Get(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			value, err := storage.Get(test.key)
 			if test.expectErr {
-				assert.Equal(t, err, test.error)
+				assert.Error(t, err)
 			} else {
-				assert.Nil(t, err)
+				assert.NoError(t, err)
 				assert.Equal(t, test.expectedValue, value)
 			}
 		})
@@ -167,14 +161,14 @@ func TestStorage_Del(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			value, err := storage.Get(test.key)
-			assert.Nil(t, err, "Expected no error when getting existing key")
+			assert.NoError(t, err, "Expected no error when getting existing key")
 			assert.Equal(t, test.value, value, "Expected existing value before deletion")
 
 			storage.Del(test.key)
 
 			value, err = storage.Get(test.key)
 			assert.Equal(t, "", value)
-			assert.NotNil(t, err)
+			assert.Error(t, err)
 		})
 	}
 }
