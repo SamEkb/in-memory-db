@@ -1,6 +1,8 @@
 package initialization
 
 import (
+	"fmt"
+
 	"in-memory-db/internal/database"
 	"in-memory-db/internal/database/compute"
 	"in-memory-db/internal/database/storage"
@@ -9,10 +11,16 @@ import (
 	"go.uber.org/zap"
 )
 
-func Initialize() (*database.Database, *zap.Logger, error) {
-	logger, err := zap.NewProduction()
+func InitializeServer() (*database.Database, *zap.Logger, error) {
+	config := zap.NewProductionConfig()
+	config.OutputPaths = []string{
+		"server.log",
+		"stderr",
+	}
+
+	logger, err := config.Build()
 	if err != nil {
-		panic("Unable to initialize logger")
+		panic(fmt.Sprintf("Failed to initialize logger: %v", err))
 	}
 
 	eng := engine.NewEngine(logger)

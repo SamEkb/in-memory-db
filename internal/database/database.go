@@ -50,7 +50,6 @@ func NewDatabase(compute computeLayer, storage storageLayer, logger *zap.Logger)
 func (d *Database) HandleQuery(queryStr string) (string, error) {
 	query, err := d.compute.Parse(queryStr)
 	if err != nil {
-		d.logger.Error("failed to parse query string", zap.String("query", queryStr), zap.Error(err))
 		return "", err
 	}
 

@@ -6,12 +6,13 @@ import (
 	"os"
 
 	"in-memory-db/internal/initialization"
+	"in-memory-db/internal/network"
 
 	"go.uber.org/zap"
 )
 
 func main() {
-	db, logger, err := initialization.Initialize()
+	logger, err := initialization.InitializeClient()
 	if err != nil {
 		panic(fmt.Sprintf("Initialization error: %v", err))
 	}
@@ -24,6 +25,8 @@ func main() {
 	}(logger)
 
 	reader := bufio.NewReader(os.Stdin)
+	conn, err := network.NewClient("127.0.0.1:3223", logger)
+	defer conn.Close()
 	for {
 		query, err := reader.ReadString('\n')
 		if err != nil {
@@ -31,14 +34,16 @@ func main() {
 			continue
 		}
 
-		res, err := db.HandleQuery(query)
+		request := []byte(query)
+
+		response, err := conn.Send(request)
 		if err != nil {
-			logger.Error("Failed to handle query", zap.String("query", query), zap.Error(err))
+			logger.Error("Failed to send request", zap.String("query", query), zap.Error(err))
 			continue
 		}
 
-		if len(res) != 0 {
-			fmt.Println(res)
+		if len(response) != 0 {
+			fmt.Println(string(response))
 		}
 	}
 }
