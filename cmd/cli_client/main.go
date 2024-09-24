@@ -12,10 +12,11 @@ import (
 )
 
 func main() {
-	logger, err := initialization.InitializeClient()
+	init, err := initialization.InitializeClient()
 	if err != nil {
 		panic(fmt.Sprintf("Initialization error: %v", err))
 	}
+	logger := init.Logger
 
 	defer func(logger *zap.Logger) {
 		err := logger.Sync()
@@ -25,7 +26,7 @@ func main() {
 	}(logger)
 
 	reader := bufio.NewReader(os.Stdin)
-	conn, err := network.NewClient("127.0.0.1:3223", logger)
+	conn, err := network.NewClient(init.Config.Network.Address, logger)
 	defer conn.Close()
 	for {
 		query, err := reader.ReadString('\n')

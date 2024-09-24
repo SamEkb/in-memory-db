@@ -72,7 +72,7 @@ func TestHashtable_Insert(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			key := test.key
-			table.Insert(key, test.value)
+			table.Put(key, test.value)
 			value, ok := table.Get(key)
 			assert.Equal(t, test.value, value)
 			assert.True(t, ok, value)

@@ -3,17 +3,11 @@ package main
 import (
 	"fmt"
 
-	"in-memory-db/internal/initialization"
 	"in-memory-db/internal/network"
 )
 
 func main() {
-	db, logger, err := initialization.InitializeServer()
-	if err != nil {
-		panic(fmt.Sprintf("Initialization error: %v", err))
-	}
-
-	server, err := network.NewServer("127.0.0.1:3223", logger, db)
+	server, err := network.NewServer()
 	if err != nil {
 		panic(fmt.Sprintf("Failed to start server: %v", err))
 	}
