@@ -2,80 +2,75 @@ package initialization
 
 import (
 	"fmt"
-	"go.uber.org/zap/zapcore"
-	"log"
-	"os"
-	"path/filepath"
-
-	"in-memory-db/internal/configuration"
-	"in-memory-db/internal/database"
-	"in-memory-db/internal/database/compute"
-	"in-memory-db/internal/database/storage"
-	"in-memory-db/internal/database/storage/engine"
 
 	"go.uber.org/zap"
+	"in-memory-db/internal/configuration"
+	"in-memory-db/internal/database"
 )
 
 type ServerInitializer struct {
-	DB     *database.Database
-	Logger *zap.Logger
-	Config *configuration.Configuration
+	DB      *database.Database
+	Logger  *zap.Logger
+	Network *Network
 }
 
+type Network struct {
+	Address        string
+	MaxConnections int
+	IdleTimeout    string
+	MaxMessageSize string
+}
+
+const defaultMessageSize = "4KB"
+const defaultAddress = "127.0.0.1:54321"
+const defaultMaxConnections = 5
+const defaultIdleTimeout = "5m"
+
 func InitializeServer() (*ServerInitializer, error) {
+	address := defaultAddress
+	maxMessageSize := defaultMessageSize
+	maxConnections := defaultMaxConnections
+	idleTimeout := defaultIdleTimeout
 	conf, err := configuration.NewConfiguration()
 	if err != nil {
 		return &ServerInitializer{}, err
 	}
 
-	logDir := filepath.Dir(conf.Logging.Output)
-	if _, err := os.Stat(logDir); os.IsNotExist(err) {
-		err = os.MkdirAll(logDir, os.ModePerm)
-		if err != nil {
-			return &ServerInitializer{}, fmt.Errorf("failed to create log directory: %v", err)
-		}
-	}
-
-	config := zap.NewProductionConfig()
-	config.Level = zap.NewAtomicLevelAt(getLogLevel(conf.Logging.Level))
-	config.OutputPaths = []string{
-		conf.Logging.Output,
-		"stderr",
-	}
-
-	logger, err := config.Build()
+	logger, err := InitializeLogger(conf.Logging)
 	if err != nil {
 		return &ServerInitializer{}, fmt.Errorf("failed to build logger: %v", err)
 	}
 
-	eng := engine.NewEngine(logger)
-	sto := storage.NewStorage(eng, logger)
-
-	com, err := compute.NewCompute(logger)
+	db, err := InitializeDatabase(logger)
 	if err != nil {
-		logger.Error("Failed to create new compute", zap.Error(err))
-		return &ServerInitializer{}, err
+		return &ServerInitializer{}, fmt.Errorf("failed to initialize database %v", err)
 	}
 
-	db, err := database.NewDatabase(com, sto, logger)
-	if err != nil {
-		logger.Error("Failed to create new database", zap.Error(err))
-		return &ServerInitializer{}, err
+	if conf.Network.Address != "" {
+		address = conf.Network.Address
+	}
+	if conf.Network.MaxConnection != 0 {
+		maxConnections = conf.Network.MaxConnection
+	}
+	if conf.Network.IdleTimeout != "" {
+		idleTimeout = conf.Network.IdleTimeout
+	}
+	if conf.Network.MaxMessageSize != "" {
+		maxMessageSize = conf.Network.MaxMessageSize
+	}
+
+	network := &Network{
+		Address:        address,
+		MaxConnections: maxConnections,
+		IdleTimeout:    idleTimeout,
+		MaxMessageSize: maxMessageSize,
 	}
 
 	initializer := &ServerInitializer{
-		DB:     db,
-		Logger: logger,
-		Config: conf,
+		DB:      db,
+		Logger:  logger,
+		Network: network,
 	}
 
 	return initializer, nil
-}
-
-func getLogLevel(level string) zapcore.Level {
-	parsedLevel, err := zapcore.ParseLevel(level)
-	if err != nil {
-		log.Fatalf("Invalid log level: %v", err)
-	}
-	return parsedLevel
 }

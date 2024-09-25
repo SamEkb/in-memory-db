@@ -1,13 +1,13 @@
 package network
 
 import (
-	"fmt"
 	"net"
 	"time"
 
 	"go.uber.org/zap"
 	"in-memory-db/internal/initialization"
 	"in-memory-db/internal/synchronization"
+	"in-memory-db/internal/utils"
 )
 
 type TcpServer struct {
@@ -19,13 +19,12 @@ type TcpServer struct {
 func NewServer() (*TcpServer, error) {
 	init, err := initialization.InitializeServer()
 	if err != nil {
-		panic(fmt.Sprintf("Initialization error: %v", err))
+		return &TcpServer{}, err
 	}
 
-	address := init.Config.Network.Address
 	logger := init.Logger
-	maxConnections := init.Config.Network.MaxConnection
 
+	address := init.Network.Address
 	l, err := net.Listen("tcp", address)
 	if err != nil {
 		logger.Error("Failed to listen on address", zap.String("address", address), zap.Error(err))
@@ -37,7 +36,7 @@ func NewServer() (*TcpServer, error) {
 		init:     init,
 	}
 
-	server.semaphore = synchronization.NewSemaphore(maxConnections)
+	server.semaphore = synchronization.NewSemaphore(init.Network.MaxConnections)
 
 	return server, nil
 }
@@ -47,13 +46,23 @@ func (s *TcpServer) AcceptConnections() {
 		conn, err := s.listener.Accept()
 		if err != nil {
 			s.init.Logger.Error("Failed to accept connection", zap.Error(err))
-			continue
+			return
 		}
 
 		s.init.Logger.Info("New client connected", zap.String("remoteAddr", conn.RemoteAddr().String()))
 
-		//TODO create time parser
-		//conn.SetWriteDeadline(parseTime(s.init.Config.Network.IdleTimeout))
+		timeout, err := utils.ParseTime(s.init.Network.IdleTimeout)
+		if err != nil {
+			s.init.Logger.Error("Failed to parse idle timeout", zap.Error(err))
+			return
+		}
+
+		err = conn.SetWriteDeadline(timeout)
+		if err != nil {
+			s.init.Logger.Error("Failed to set write deadline", zap.Error(err))
+			return
+		}
+
 		s.semaphore.Acquire()
 		go func() {
 			s.handleClient(conn)
@@ -66,12 +75,18 @@ func (s *TcpServer) handleClient(conn net.Conn) {
 	defer conn.Close()
 	err := conn.SetReadDeadline(time.Now().Add(5 * time.Minute))
 	if err != nil {
-
+		s.init.Logger.Error("Failed to set deadline", zap.Error(err))
+		return
 	}
 
-	//TODO create message size parser
-	//messageSize := s.init.Config.Network.MaxMessageSize
-	buf := make([]byte, 1024)
+	messageSize := s.init.Network.MaxMessageSize
+	size, err := utils.ParseSize(messageSize)
+	if err != nil {
+		s.init.Logger.Error("Failed to parse message size", zap.Error(err))
+		return
+	}
+
+	buf := make([]byte, size)
 	for {
 		request, err := conn.Read(buf)
 		if err != nil {
@@ -83,7 +98,7 @@ func (s *TcpServer) handleClient(conn net.Conn) {
 		res, err := s.init.DB.HandleQuery(query)
 		if err != nil {
 			s.init.Logger.Error("Failed to handle query", zap.String("query", query), zap.Error(err))
-			continue
+			return
 		}
 		s.init.Logger.Info("Received message", zap.String("message", res))
 		_, _ = conn.Write([]byte(res))

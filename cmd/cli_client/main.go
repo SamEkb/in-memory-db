@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"os"
 
@@ -12,6 +13,10 @@ import (
 )
 
 func main() {
+	address := flag.String("address", "localhost:3223", "Address of the server to connect to")
+
+	flag.Parse()
+
 	init, err := initialization.InitializeClient()
 	if err != nil {
 		panic(fmt.Sprintf("Initialization error: %v", err))
@@ -25,8 +30,12 @@ func main() {
 		}
 	}(logger)
 
+	if init.Config.Address != "" {
+		address = &init.Config.Address
+	}
+
 	reader := bufio.NewReader(os.Stdin)
-	conn, err := network.NewClient(init.Config.Network.Address, logger)
+	conn, err := network.NewClient(*address, logger)
 	defer conn.Close()
 	for {
 		query, err := reader.ReadString('\n')

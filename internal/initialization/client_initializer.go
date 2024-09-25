@@ -7,22 +7,20 @@ import (
 
 type ClientInitializer struct {
 	Logger *zap.Logger
-	Config *configuration.Configuration
+	Config *configuration.NetworkConfig
 }
 
 func InitializeClient() (*ClientInitializer, error) {
-	logger, err := zap.NewProduction()
-	if err != nil {
-		return &ClientInitializer{}, err
-	}
-	config, err := configuration.NewConfiguration()
+	conf, err := configuration.NewConfiguration()
 	if err != nil {
 		return &ClientInitializer{}, err
 	}
 
+	logger, err := InitializeLogger(conf.Logging)
+
 	initializer := &ClientInitializer{
 		Logger: logger,
-		Config: config,
+		Config: conf.Network,
 	}
 
 	return initializer, nil
