@@ -2,6 +2,8 @@ package initialization
 
 import (
 	"fmt"
+	"go.uber.org/zap/zapcore"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -35,10 +37,9 @@ func InitializeServer() (*ServerInitializer, error) {
 	}
 
 	config := zap.NewProductionConfig()
-	//TODO add logger level
-	//config.Level = conf.Logging.Level
+	config.Level = zap.NewAtomicLevelAt(getLogLevel(conf.Logging.Level))
 	config.OutputPaths = []string{
-		conf.Logging.Output, //"/log/output.log"
+		conf.Logging.Output,
 		"stderr",
 	}
 
@@ -69,4 +70,12 @@ func InitializeServer() (*ServerInitializer, error) {
 	}
 
 	return initializer, nil
+}
+
+func getLogLevel(level string) zapcore.Level {
+	parsedLevel, err := zapcore.ParseLevel(level)
+	if err != nil {
+		log.Fatalf("Invalid log level: %v", err)
+	}
+	return parsedLevel
 }

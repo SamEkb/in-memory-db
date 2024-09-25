@@ -13,7 +13,7 @@ type ClientInitializer struct {
 func InitializeClient() (*ClientInitializer, error) {
 	logger, err := zap.NewProduction()
 	if err != nil {
-		panic("Unable to initialize logger")
+		return &ClientInitializer{}, err
 	}
 	config, err := configuration.NewConfiguration()
 	if err != nil {

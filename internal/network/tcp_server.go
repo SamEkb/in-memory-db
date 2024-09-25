@@ -53,7 +53,7 @@ func (s *TcpServer) AcceptConnections() {
 		s.init.Logger.Info("New client connected", zap.String("remoteAddr", conn.RemoteAddr().String()))
 
 		//TODO create time parser
-		//conn.SetWriteDeadline(s.init.Config.Network.IdleTimeout)
+		//conn.SetWriteDeadline(parseTime(s.init.Config.Network.IdleTimeout))
 		s.semaphore.Acquire()
 		go func() {
 			s.handleClient(conn)
