@@ -36,6 +36,9 @@ func main() {
 
 	reader := bufio.NewReader(os.Stdin)
 	conn, err := network.NewClient(*address, logger)
+	if err != nil {
+		panic(fmt.Sprintf("Failed to start client: %v", err))
+	}
 	defer conn.Close()
 	for {
 		query, err := reader.ReadString('\n')

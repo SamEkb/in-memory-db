@@ -46,7 +46,7 @@ func (s *TcpServer) AcceptConnections() {
 		conn, err := s.listener.Accept()
 		if err != nil {
 			s.init.Logger.Error("Failed to accept connection", zap.Error(err))
-			return
+			continue
 		}
 
 		s.init.Logger.Info("New client connected", zap.String("remoteAddr", conn.RemoteAddr().String()))
@@ -54,13 +54,13 @@ func (s *TcpServer) AcceptConnections() {
 		timeout, err := utils.ParseTime(s.init.Network.IdleTimeout)
 		if err != nil {
 			s.init.Logger.Error("Failed to parse idle timeout", zap.Error(err))
-			return
+			continue
 		}
 
 		err = conn.SetWriteDeadline(timeout)
 		if err != nil {
 			s.init.Logger.Error("Failed to set write deadline", zap.Error(err))
-			return
+			continue
 		}
 
 		s.semaphore.Acquire()
@@ -91,14 +91,14 @@ func (s *TcpServer) handleClient(conn net.Conn) {
 		request, err := conn.Read(buf)
 		if err != nil {
 			s.init.Logger.Error("Error reading from client", zap.Error(err))
-			return
+			continue
 		}
 
 		query := string(buf[:request])
 		res, err := s.init.DB.HandleQuery(query)
 		if err != nil {
 			s.init.Logger.Error("Failed to handle query", zap.String("query", query), zap.Error(err))
-			return
+			_, _ = conn.Write([]byte("Error processing request\n"))
 		}
 		s.init.Logger.Info("Received message", zap.String("message", res))
 		_, _ = conn.Write([]byte(res))
