@@ -15,7 +15,6 @@ func InitializeDatabase(logger *zap.Logger) (*database.Database, error) {
 
 	com, err := compute.NewCompute(logger)
 	if err != nil {
-		logger.Error("Failed to create new compute", zap.Error(err))
 		return nil, err
 	}
 
