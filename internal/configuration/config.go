@@ -33,13 +33,13 @@ type LoggingConfig struct {
 func NewConfiguration() (*Config, error) {
 	yamlData, err := os.ReadFile(config)
 	if err != nil {
-		return &Config{}, err
+		return nil, err
 	}
 
 	var config *Config
 	err = yaml.Unmarshal(yamlData, &config)
 	if err != nil {
-		return &Config{}, err
+		return nil, err
 	}
 
 	return config, nil

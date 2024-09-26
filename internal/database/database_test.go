@@ -64,18 +64,11 @@ func TestNewDatabase(t *testing.T) {
 }
 
 func TestDatabase_HandleQuery(t *testing.T) {
-	logger, _ := zap.NewProduction()
-	defer func(logger *zap.Logger) {
-		err := logger.Sync()
-		if err != nil {
-			logger.Error("Unable to sync logger", zap.Error(err))
-		}
-	}(logger)
-
-	storage := &mockStorage{data: map[string]string{"1": "1"}}
+	logger := zaptest.NewLogger(t)
 
 	tests := map[string]struct {
 		compute   *mockCompute
+		storage   *mockStorage
 		queryStr  string
 		expected  string
 		expectErr bool
@@ -87,6 +80,7 @@ func TestDatabase_HandleQuery(t *testing.T) {
 					Arguments: []string{"1"},
 				},
 			},
+			storage:   &mockStorage{data: map[string]string{"1": "1"}},
 			queryStr:  "get 1",
 			expected:  "1",
 			expectErr: false,
@@ -98,6 +92,7 @@ func TestDatabase_HandleQuery(t *testing.T) {
 					Arguments: []string{"1", "1"},
 				},
 			},
+			storage:   &mockStorage{data: map[string]string{}},
 			queryStr:  "set 1 1",
 			expected:  "Ok",
 			expectErr: false,
@@ -109,6 +104,7 @@ func TestDatabase_HandleQuery(t *testing.T) {
 					Arguments: []string{"1"},
 				},
 			},
+			storage:   &mockStorage{data: map[string]string{"1": "1"}},
 			queryStr:  "del 1",
 			expected:  "Ok",
 			expectErr: false,
@@ -117,6 +113,7 @@ func TestDatabase_HandleQuery(t *testing.T) {
 			compute: &mockCompute{
 				parseErr: errors.New("parse error"),
 			},
+			storage:   &mockStorage{data: map[string]string{}},
 			queryStr:  "set 1 value1",
 			expected:  "",
 			expectErr: true,
@@ -125,6 +122,7 @@ func TestDatabase_HandleQuery(t *testing.T) {
 			compute: &mockCompute{
 				queryResult: compute.Query{CommandID: 999},
 			},
+			storage:   &mockStorage{data: map[string]string{}},
 			queryStr:  "unknown command",
 			expected:  "",
 			expectErr: true,
@@ -133,14 +131,14 @@ func TestDatabase_HandleQuery(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			db, _ := NewDatabase(test.compute, storage, logger)
+			db, _ := NewDatabase(test.compute, test.storage, logger)
 			result, err := db.HandleQuery(test.queryStr)
 
 			if test.expectErr {
-				assert.NotNil(t, err)
+				assert.Error(t, err)
 				assert.Equal(t, test.expected, result)
 			} else {
-				assert.Nil(t, err)
+				assert.NoError(t, err)
 				assert.Equal(t, test.expected, result)
 			}
 		})

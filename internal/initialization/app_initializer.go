@@ -23,7 +23,7 @@ type Config struct {
 func NewApp() (*App, error) {
 	conf, err := configuration.NewConfiguration()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to load configuration: %v", err)
 	}
 
 	logger, err := InitializeLogger(conf.Logging)

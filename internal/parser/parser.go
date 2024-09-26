@@ -1,16 +1,10 @@
-package utils
+package parser
 
 import (
 	"fmt"
 	"strconv"
 	"strings"
-	"time"
 )
-
-func ParseTime(duration time.Duration) time.Time {
-	res := time.Now().Add(duration)
-	return res
-}
 
 func ParseSize(sizeStr string) (int, error) {
 	sizeStr = strings.ToUpper(sizeStr)
@@ -36,6 +30,9 @@ func ParseSize(sizeStr string) (int, error) {
 	value, err := strconv.Atoi(sizeStr)
 	if err != nil {
 		return 0, fmt.Errorf("invalid size value: %v", err)
+	}
+	if value <= 0 {
+		return 0, fmt.Errorf("value: %d should be more then 0", value)
 	}
 
 	return value * multiplier, nil

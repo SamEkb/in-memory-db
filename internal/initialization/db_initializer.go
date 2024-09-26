@@ -16,13 +16,13 @@ func InitializeDatabase(logger *zap.Logger) (*database.Database, error) {
 	com, err := compute.NewCompute(logger)
 	if err != nil {
 		logger.Error("Failed to create new compute", zap.Error(err))
-		return &database.Database{}, err
+		return nil, err
 	}
 
 	db, err := database.NewDatabase(com, sto, logger)
 	if err != nil {
 		logger.Error("Failed to create new database", zap.Error(err))
-		return &database.Database{}, err
+		return nil, err
 	}
 
 	return db, nil

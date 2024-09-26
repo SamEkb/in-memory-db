@@ -1,12 +1,12 @@
 package network
 
 import (
+	"fmt"
 	"net"
 	"time"
 
 	"in-memory-db/internal/initialization"
 	"in-memory-db/internal/synchronization"
-	"in-memory-db/internal/utils"
 
 	"go.uber.org/zap"
 )
@@ -20,7 +20,7 @@ type TcpServer struct {
 func NewServer() (*TcpServer, error) {
 	app, err := initialization.NewApp()
 	if err != nil {
-		return &TcpServer{}, err
+		return nil, fmt.Errorf("failed to initialize app: %v", err)
 	}
 
 	logger := app.Logger
@@ -52,7 +52,8 @@ func (s *TcpServer) AcceptConnections() {
 
 		s.app.Logger.Info("New client connected", zap.String("remoteAddr", conn.RemoteAddr().String()))
 
-		timeout := utils.ParseTime(s.app.Config.Network.IdleTimeout)
+		duration := s.app.Config.Network.IdleTimeout
+		timeout := time.Now().Add(duration)
 
 		err = conn.SetWriteDeadline(timeout)
 		if err != nil {
@@ -95,7 +96,7 @@ func (s *TcpServer) handleClient(conn net.Conn) {
 	}
 }
 
-func (s *TcpServer) Close() {
+func (s *TcpServer) Close() error {
 	s.app.Logger.Info("Closing server")
-	_ = s.listener.Close()
+	return s.listener.Close()
 }

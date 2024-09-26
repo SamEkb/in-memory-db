@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"in-memory-db/internal/utils"
+	"in-memory-db/internal/parser"
 )
 
 type Network struct {
@@ -47,7 +47,7 @@ func ConfigureNetwork(conf *NetworkConfig) (*Network, error) {
 		messageSize = conf.MaxMessageSize
 	}
 
-	size, err := utils.ParseSize(messageSize)
+	size, err := parser.ParseSize(messageSize)
 	if err != nil {
 		return nil, fmt.Errorf("invalid message size: %v", err)
 	}

@@ -20,7 +20,12 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("Failed to start client: %v", err))
 	}
-	defer client.Close()
+	defer func(client *network.TcpClient) {
+		err := client.Close()
+		if err != nil {
+			panic(fmt.Sprintf("Failed to close client: %v", err))
+		}
+	}(client)
 	for {
 		query, err := reader.ReadString('\n')
 		if err != nil {

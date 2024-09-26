@@ -11,7 +11,12 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("Failed to start server: %v", err))
 	}
-	defer server.Close()
+	defer func(server *network.TcpServer) {
+		err := server.Close()
+		if err != nil {
+			panic(fmt.Sprintf("Failed to close server: %v", err))
+		}
+	}(server)
 
 	fmt.Println("Server is running...")
 

@@ -23,7 +23,7 @@ func NewClient(address string) (*TcpClient, error) {
 
 	conn, err := net.Dial("tcp", address)
 	if err != nil {
-		return &TcpClient{}, err
+		return nil, err
 	}
 
 	client := &TcpClient{
@@ -38,7 +38,7 @@ func (c *TcpClient) Send(message []byte) ([]byte, error) {
 	_, err := c.connection.Write(message)
 	if err != nil {
 		c.App.Logger.Error("Failed to send message", zap.Error(err))
-		return []byte{}, err
+		return nil, err
 	}
 
 	reply := make([]byte, 1024)
@@ -60,6 +60,6 @@ func (c *TcpClient) Send(message []byte) ([]byte, error) {
 	return reply[:resp], nil
 }
 
-func (c *TcpClient) Close() {
-	_ = c.connection.Close()
+func (c *TcpClient) Close() error {
+	return c.connection.Close()
 }
