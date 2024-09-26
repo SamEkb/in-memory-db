@@ -3,9 +3,10 @@ package initialization
 import (
 	"fmt"
 
-	"go.uber.org/zap"
 	"in-memory-db/internal/configuration"
 	"in-memory-db/internal/database"
+
+	"go.uber.org/zap"
 )
 
 type App struct {
@@ -15,7 +16,7 @@ type App struct {
 }
 
 type Config struct {
-	Network *NetworkConfig
+	Network *configuration.Network
 	Logging *configuration.LoggingConfig
 }
 
@@ -35,7 +36,7 @@ func NewApp() (*App, error) {
 		return nil, fmt.Errorf("failed to initialize database: %v", err)
 	}
 
-	networkConfig, err := InitializeNetwork(conf.Network)
+	networkConfig, err := configuration.ConfigureNetwork(conf.Network)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize network: %v", err)
 	}

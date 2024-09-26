@@ -5,8 +5,9 @@ import (
 	"io"
 	"net"
 
-	"go.uber.org/zap"
 	"in-memory-db/internal/initialization"
+
+	"go.uber.org/zap"
 )
 
 type TcpClient struct {

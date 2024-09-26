@@ -1,14 +1,13 @@
-package initialization
+package configuration
 
 import (
 	"fmt"
 	"time"
 
-	"in-memory-db/internal/configuration"
 	"in-memory-db/internal/utils"
 )
 
-type NetworkConfig struct {
+type Network struct {
 	Address        string
 	MaxConnections int
 	IdleTimeout    time.Duration
@@ -22,7 +21,7 @@ const (
 	defaultIdleTimeout    = "5m"
 )
 
-func InitializeNetwork(conf *configuration.NetworkConfig) (*NetworkConfig, error) {
+func ConfigureNetwork(conf *NetworkConfig) (*Network, error) {
 	address := defaultAddress
 	if conf.Address != "" {
 		address = conf.Address
@@ -53,7 +52,7 @@ func InitializeNetwork(conf *configuration.NetworkConfig) (*NetworkConfig, error
 		return nil, fmt.Errorf("invalid message size: %v", err)
 	}
 
-	networkConfig := &NetworkConfig{
+	networkConfig := &Network{
 		Address:        address,
 		MaxConnections: maxConnections,
 		IdleTimeout:    timeout,
