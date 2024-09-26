@@ -27,14 +27,17 @@ logging:
   level: "info"
   output: "stdout"
 `
-				err := os.WriteFile(config, []byte(validConfig), 0644)
+				err := os.WriteFile(config, []byte(validConfig), 0600)
 				assert.NoError(t, err)
 			},
 			expectError: false,
 		},
 		"config file not found": {
 			setupConfig: func() {
-				os.Remove(config)
+				err := os.Remove(config)
+				if err != nil {
+					return
+				}
 			},
 			expectError:      true,
 			expectedErrorMsg: "no such file or directory",
@@ -44,7 +47,7 @@ logging:
 				invalidConfig := `
 invalid_yaml_content
 `
-				err := os.WriteFile(config, []byte(invalidConfig), 0644)
+				err := os.WriteFile(config, []byte(invalidConfig), 0600)
 				assert.NoError(t, err)
 			},
 			expectError:      true,
@@ -72,7 +75,10 @@ invalid_yaml_content
 				assert.Equal(t, "4KB", configFile.Network.MaxMessageSize)
 			}
 
-			os.Remove(config)
+			err = os.Remove(config)
+			if err != nil {
+				return
+			}
 		})
 	}
 }

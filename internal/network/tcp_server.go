@@ -70,7 +70,12 @@ func (s *TcpServer) AcceptConnections() {
 }
 
 func (s *TcpServer) handleClient(conn net.Conn) {
-	defer conn.Close()
+	defer func(conn net.Conn) {
+		err := conn.Close()
+		if err != nil {
+			panic(fmt.Sprintf("Failed to close connection: %v", err))
+		}
+	}(conn)
 	err := conn.SetReadDeadline(time.Now().Add(5 * time.Minute))
 	if err != nil {
 		s.app.Logger.Error("Failed to set deadline", zap.Error(err))

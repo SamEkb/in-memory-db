@@ -20,7 +20,7 @@ func InitializeLogger(conf *configuration.LoggingConfig) (*zap.Logger, error) {
 
 	if conf != nil {
 		if conf.Level != "" {
-			ok := true
+			var ok bool
 			lvl, ok = getLogLevel(conf.Level)
 			if !ok {
 				return nil, fmt.Errorf("log level: %s wasn't found", conf.Level)
@@ -30,7 +30,7 @@ func InitializeLogger(conf *configuration.LoggingConfig) (*zap.Logger, error) {
 				output = conf.Output
 				logDir := filepath.Dir(conf.Output)
 				if _, err := os.Stat(logDir); os.IsNotExist(err) {
-					err = os.MkdirAll(logDir, os.ModePerm)
+					err = os.MkdirAll(logDir, 0750)
 					if err != nil {
 						return nil, fmt.Errorf("failed to create log directory: %v", err)
 					}
