@@ -5,9 +5,10 @@ import (
 	"os"
 	"path/filepath"
 
+	"in-memory-db/internal/configuration"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"in-memory-db/internal/configuration"
 )
 
 const defaultLvl = zapcore.InfoLevel

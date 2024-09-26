@@ -1,11 +1,12 @@
 package initialization
 
 import (
-	"go.uber.org/zap"
 	"in-memory-db/internal/database"
 	"in-memory-db/internal/database/compute"
 	"in-memory-db/internal/database/storage"
 	"in-memory-db/internal/database/storage/engine"
+
+	"go.uber.org/zap"
 )
 
 func InitializeDatabase(logger *zap.Logger) (*database.Database, error) {

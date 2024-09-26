@@ -7,13 +7,9 @@ import (
 	"time"
 )
 
-func ParseTime(durationStr string) (time.Time, error) {
-	duration, err := time.ParseDuration(durationStr)
-	if err != nil {
-		return time.Time{}, err
-	}
+func ParseTime(duration time.Duration) time.Time {
 	res := time.Now().Add(duration)
-	return res, nil
+	return res
 }
 
 func ParseSize(sizeStr string) (int, error) {

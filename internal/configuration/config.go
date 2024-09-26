@@ -8,7 +8,7 @@ import (
 
 const config = "config.yaml"
 
-type Configuration struct {
+type Config struct {
 	Network *NetworkConfig `yaml:"network"`
 	Engine  *EngineConfig  `yaml:"engine"`
 	Logging *LoggingConfig `yaml:"logging"`
@@ -16,7 +16,7 @@ type Configuration struct {
 
 type NetworkConfig struct {
 	Address        string `yaml:"address"`
-	MaxConnection  int    `yaml:"max_connections"`
+	MaxConnections int    `yaml:"max_connections"`
 	MaxMessageSize string `yaml:"max_message_size"`
 	IdleTimeout    string `yaml:"idle_timeout"`
 }
@@ -30,16 +30,16 @@ type LoggingConfig struct {
 	Output string `yaml:"output"`
 }
 
-func NewConfiguration() (*Configuration, error) {
+func NewConfiguration() (*Config, error) {
 	yamlData, err := os.ReadFile(config)
 	if err != nil {
-		return &Configuration{}, err
+		return &Config{}, err
 	}
 
-	var config *Configuration
+	var config *Config
 	err = yaml.Unmarshal(yamlData, &config)
 	if err != nil {
-		return &Configuration{}, err
+		return &Config{}, err
 	}
 
 	return config, nil
