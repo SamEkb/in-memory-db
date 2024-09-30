@@ -2,13 +2,22 @@ package synchronization
 
 import "sync"
 
+type ISemaphore interface {
+	Acquire()
+	Release()
+}
+
 type Semaphore struct {
 	cond  *sync.Cond
 	max   int
 	count int
 }
 
-func NewSemaphore(max int) *Semaphore {
+func NewSemaphore(max int) ISemaphore {
+	if max == 0 {
+		return &NoOpSemaphore{}
+	}
+
 	m := &sync.Mutex{}
 	return &Semaphore{
 		cond: sync.NewCond(m),

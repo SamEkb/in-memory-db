@@ -2,6 +2,7 @@ package network
 
 import (
 	"errors"
+	"in-memory-db/internal/database"
 	"net"
 	"sync"
 	"testing"
@@ -36,7 +37,7 @@ func TestNewServer(t *testing.T) {
 
 		defer monkey.UnpatchAll()
 
-		server, err := NewServer()
+		server, err := initializeMockServer(false)
 		assert.NotNil(t, server)
 		assert.Nil(t, err)
 	})
@@ -47,7 +48,7 @@ func TestNewServer(t *testing.T) {
 		})
 		defer monkey.UnpatchAll()
 
-		server, err := NewServer()
+		server, err := initializeMockServer(true)
 		assert.Nil(t, server)
 		assert.NotNil(t, err)
 	})
@@ -58,7 +59,7 @@ func TestNewServer(t *testing.T) {
 		})
 		defer monkey.UnpatchAll()
 
-		server, err := NewServer()
+		server, err := initializeMockServer(false)
 		assert.Nil(t, server)
 		assert.NotNil(t, err)
 	})
@@ -158,4 +159,36 @@ func TestTcpServer_Close(t *testing.T) {
 			}
 		})
 	}
+}
+
+func initializeMockApp(shouldFail bool) (*initialization.MockApp, error) {
+	if shouldFail {
+		return nil, errors.New("failed to initialize app")
+	}
+
+	mockLogger := zap.NewNop()
+	mockDB := &database.MockDatabase{}
+	mockConfig := &initialization.Config{
+		Network: &configuration.Network{
+			Address:        "127.0.0.1:8080",
+			MaxMessageSize: 1024,
+			IdleTimeout:    5 * time.Minute,
+			MaxConnections: 10,
+		},
+		Logging: &configuration.LoggingConfig{
+			Level: "info",
+		},
+	}
+
+	return initialization.NewMockApp(mockLogger, mockDB, mockConfig), nil
+}
+
+func initializeMockServer(shouldFail bool) (*TcpServer, error) {
+	mockSemaphore := &initialization.MockSemaphore{}
+	mockApp, err := initializeMockApp(shouldFail)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewServer(mockSemaphore, mockApp)
 }

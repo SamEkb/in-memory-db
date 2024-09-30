@@ -9,10 +9,28 @@ import (
 	"go.uber.org/zap"
 )
 
+type IApp interface {
+	GetLogger() *zap.Logger
+	GetDataBase() database.IDatabase
+	GetConfig() *Config
+}
+
 type App struct {
 	Logger *zap.Logger
-	DB     *database.Database
+	DB     database.IDatabase
 	Config *Config
+}
+
+func (app *App) GetLogger() *zap.Logger {
+	return app.Logger
+}
+
+func (app *App) GetDataBase() database.IDatabase {
+	return app.DB
+}
+
+func (app *App) GetConfig() *Config {
+	return app.Config
 }
 
 type Config struct {

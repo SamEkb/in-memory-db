@@ -6,6 +6,12 @@ import (
 	"in-memory-db/internal/database/compute"
 )
 
+type MockDatabase struct{}
+
+func (m *MockDatabase) HandleQuery(queryStr string) (string, error) {
+	return "mock response", nil
+}
+
 type mockCompute struct {
 	queryResult compute.Query
 	parseErr    error

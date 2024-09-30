@@ -21,6 +21,10 @@ type computeLayer interface {
 	Parse(string) (compute.Query, error)
 }
 
+type IDatabase interface {
+	HandleQuery(queryStr string) (string, error)
+}
+
 type Database struct {
 	compute computeLayer
 	storage storageLayer
