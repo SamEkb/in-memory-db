@@ -21,7 +21,7 @@ func NewEngine(logger *zap.Logger) *Engine {
 }
 
 func (e *Engine) Set(key string, value string) {
-	e.hashtable.Insert(key, value)
+	e.hashtable.Put(key, value)
 }
 
 func (e *Engine) Get(key string) (string, error) {

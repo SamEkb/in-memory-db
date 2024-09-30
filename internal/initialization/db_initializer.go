@@ -9,25 +9,20 @@ import (
 	"go.uber.org/zap"
 )
 
-func Initialize() (*database.Database, *zap.Logger, error) {
-	logger, err := zap.NewProduction()
-	if err != nil {
-		panic("Unable to initialize logger")
-	}
-
+func InitializeDatabase(logger *zap.Logger) (*database.Database, error) {
 	eng := engine.NewEngine(logger)
 	sto := storage.NewStorage(eng, logger)
 
 	com, err := compute.NewCompute(logger)
 	if err != nil {
-		logger.Error("Failed to create new compute", zap.Error(err))
-		return nil, nil, err
+		return nil, err
 	}
 
 	db, err := database.NewDatabase(com, sto, logger)
 	if err != nil {
 		logger.Error("Failed to create new database", zap.Error(err))
-		return nil, nil, err
+		return nil, err
 	}
-	return db, logger, nil
+
+	return db, nil
 }
