@@ -1,8 +1,9 @@
 package initialization
 
 import (
-	"go.uber.org/zap"
 	"in-memory-db/internal/database"
+
+	"go.uber.org/zap"
 )
 
 type MockSemaphore struct {
